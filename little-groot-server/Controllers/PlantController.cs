@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LittleGrootServer.Data;
 using LittleGrootServer.Models;
 
 namespace LittleGrootServer.Controllers {
-    [Route("/api/[controller]")]
+    [Route("/api/v1/[controller]")]
     [ApiController]
     public class PlantsController : ControllerBase {
         private LittleGrootDbContext _dbContext = null;
@@ -39,6 +38,22 @@ namespace LittleGrootServer.Controllers {
             return CreatedAtAction("GetPlant", new { id = plant.Id }, plant);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> EditPlant(Plant plant) {
+            _dbContext.Entry(plant).State = EntityState.Modified;
+            try {
+                await _dbContext.SaveChangesAsync();
+            } catch (DbUpdateConcurrencyException) {
+                var plantExists = await PlantExists(plant.Id);
+                if (!plantExists) {
+                    return NotFound();
+                } else {
+                    throw;
+                }
+            }
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Plant>> DeletePlant(int id) {
             var plant = await _dbContext.Plants.FindAsync(id);
@@ -50,6 +65,10 @@ namespace LittleGrootServer.Controllers {
             await _dbContext.SaveChangesAsync();
 
             return plant;
+        }
+
+        private Task<bool> PlantExists(int id) {
+            return _dbContext.Plants.AnyAsync(plant => plant.Id == id);
         }
     }
 }

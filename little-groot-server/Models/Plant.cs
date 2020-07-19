@@ -6,7 +6,7 @@ namespace LittleGrootServer.Models {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Plant Id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Required]
         [StringLength(60, MinimumLength = 3)]

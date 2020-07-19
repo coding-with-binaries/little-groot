@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using LittleGrootServer.Data;
+using LittleGrootServer.Services;
 
 namespace LittleGrootServer {
     public class Startup {
@@ -18,6 +19,8 @@ namespace LittleGrootServer {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers();
+            services.AddScoped<IPlantsService, PlantsService>();
+            services.AddScoped<IUsersService, UsersService>();
             services.AddRouting(opt => opt.LowercaseUrls = true);
             services.AddDbContext<LittleGrootDbContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("LittleGrootDbConnection")));
             services.AddSwaggerGen(opt => {

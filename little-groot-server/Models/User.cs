@@ -28,5 +28,8 @@ namespace LittleGrootServer.Models {
         [StringLength(60, MinimumLength = 3)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
     }
 }

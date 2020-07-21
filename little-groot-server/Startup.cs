@@ -33,6 +33,13 @@ namespace LittleGrootServer {
             services.AddDbContext<LittleGrootDbContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("LittleGrootDbConnection")));
             services.AddSwaggerGen(opt => {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Little Groot API", Version = "v1" });
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
             });
 
             var appSettingsSection = Configuration.GetSection("AppSettings");

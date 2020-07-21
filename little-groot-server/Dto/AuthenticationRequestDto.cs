@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace LittleGrootServer.Dto {
-    public class AuthenticationDto {
+    public class AuthenticationRequestDto {
         [Required]
         public string UserName { get; set; }
 

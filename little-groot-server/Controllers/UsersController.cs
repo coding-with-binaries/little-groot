@@ -16,6 +16,7 @@ namespace LittleGrootServer.Controllers {
             this._usersService = usersService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers() {
             var userDtos = await _usersService.GetUsers();
@@ -31,6 +32,16 @@ namespace LittleGrootServer.Controllers {
             } catch (LittleGrootRegistrationException ex) {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public async Task<ActionResult<AuthenticationResponseDto>> Authenticate([FromBody] AuthenticationRequestDto authenticationRequestDto) {
+            var authenticationResponseDto = await _usersService.Authenticate(authenticationRequestDto);
+            if (authenticationResponseDto == null)
+                return BadRequest("Username and password are incorrect");
+
+            return Ok(authenticationResponseDto);
         }
     }
 }

@@ -7,6 +7,8 @@ namespace LittleGrootServer.Utils {
         public AutoMapperProfile() {
             CreateMap<User, UserDto>();
             CreateMap<RegistrationDto, User>();
+            CreateMap<Plant, PlantDto>();
+            CreateMap<PlantDto, Plant>();
         }
     }
 }

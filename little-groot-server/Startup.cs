@@ -27,8 +27,7 @@ namespace LittleGrootServer {
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddScoped<IPlantsService, PlantsService>();
-            services.AddScoped<IUsersService, UsersService>();
+
             services.AddRouting(opt => opt.LowercaseUrls = true);
             services.AddDbContext<LittleGrootDbContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("LittleGrootDbConnection")));
             services.AddSwaggerGen(opt => {
@@ -40,6 +39,15 @@ namespace LittleGrootServer {
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement {{
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }});
             });
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -71,24 +79,26 @@ namespace LittleGrootServer {
                     ValidateAudience = false
                 };
             });
+            services.AddScoped<IPlantsService, PlantsService>();
+            services.AddScoped<IUsersService, UsersService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseSwagger();
             app.UseSwaggerUI(opt => {
                 opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Little Groot API");
             });
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

@@ -1,28 +1,32 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using LittleGrootServer.Services;
-using LittleGrootServer.Models;
+using LittleGrootServer.Dto;
 
 namespace LittleGrootServer.Controllers {
-    [Route("/api/v1/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("/api/v1/[controller]")]
     public class PlantsController : ControllerBase {
         private IPlantsService _plantsService = null;
 
         public PlantsController(IPlantsService plantsService) {
-            this._plantsService = plantsService;
+            _plantsService = plantsService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Plant>>> GetPlants() {
+        public async Task<ActionResult<IEnumerable<PlantDto>>> GetPlants() {
             var plants = await _plantsService.GetPlants();
             return Ok(plants);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Plant>> GetPlant(long id) {
+        public async Task<ActionResult<PlantDto>> GetPlant(long id) {
             var plant = await _plantsService.GetPlant(id);
 
             if (plant == null) {
@@ -33,26 +37,26 @@ namespace LittleGrootServer.Controllers {
         }
 
         [HttpPost]
-        public async Task<ActionResult<Plant>> AddPlant(Plant plant) {
-            plant = await _plantsService.AddPlant(plant);
-            return CreatedAtAction("GetPlant", new { id = plant.Id }, plant);
+        public async Task<ActionResult<PlantDto>> AddPlant(PlantDto plantDto) {
+            plantDto = await _plantsService.AddPlant(plantDto);
+            return CreatedAtAction("GetPlant", new { id = plantDto.Id }, plantDto);
         }
 
         [HttpPut]
-        public async Task<ActionResult<Plant>> UpdatePlant(Plant plant) {
+        public async Task<ActionResult<PlantDto>> UpdatePlant(PlantDto plantDto) {
             try {
-                plant = await _plantsService.UpdatePlant(plant);
-                if (plant == null) {
+                plantDto = await _plantsService.UpdatePlant(plantDto);
+                if (plantDto == null) {
                     return NotFound();
                 }
-                return Ok(plant);
+                return Ok(plantDto);
             } catch (DbUpdateConcurrencyException) {
                 throw;
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Plant>> DeletePlant(long id) {
+        public async Task<ActionResult<PlantDto>> DeletePlant(long id) {
             var plant = await _plantsService.DeletePlant(id);
             if (plant == null) {
                 return NotFound();

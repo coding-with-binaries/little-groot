@@ -1,42 +1,52 @@
+using AutoMapper;
+using LittleGrootServer.Data;
+using LittleGrootServer.Dto;
+using LittleGrootServer.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using LittleGrootServer.Data;
-using LittleGrootServer.Models;
 
 namespace LittleGrootServer.Services {
     public interface IPlantsService {
-        Task<IEnumerable<Plant>> GetPlants();
-        Task<Plant> GetPlant(long id);
-        Task<Plant> AddPlant(Plant plant);
-        Task<Plant> UpdatePlant(Plant plant);
-        Task<Plant> DeletePlant(long id);
+        Task<IEnumerable<PlantDto>> GetPlants();
+        Task<PlantDto> GetPlant(long id);
+        Task<PlantDto> AddPlant(PlantDto plant);
+        Task<PlantDto> UpdatePlant(PlantDto plant);
+        Task<PlantDto> DeletePlant(long id);
     }
 
     public class PlantsService : IPlantsService {
 
         private LittleGrootDbContext _dbContext = null;
+        private IMapper _mapper;
 
-        public PlantsService(LittleGrootDbContext context) {
-            this._dbContext = context;
+        public PlantsService(LittleGrootDbContext context, IMapper mapper) {
+            _dbContext = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Plant>> GetPlants() {
-            return await _dbContext.Plants.ToListAsync();
+        public async Task<IEnumerable<PlantDto>> GetPlants() {
+            var plants = await _dbContext.Plants.ToListAsync();
+
+            return _mapper.Map<IEnumerable<PlantDto>>(plants);
         }
 
-        public async Task<Plant> GetPlant(long id) {
-            return await _dbContext.Plants.FindAsync(id);
+        public async Task<PlantDto> GetPlant(long id) {
+            var plant = await _dbContext.Plants.FindAsync(id);
+
+            return _mapper.Map<PlantDto>(plant);
         }
 
-        public async Task<Plant> AddPlant(Plant plant) {
+        public async Task<PlantDto> AddPlant(PlantDto plantDto) {
+            var plant = _mapper.Map<Plant>(plantDto);
             _dbContext.Plants.Add(plant);
             await _dbContext.SaveChangesAsync();
 
-            return plant;
+            return _mapper.Map<PlantDto>(plant);
         }
 
-        public async Task<Plant> UpdatePlant(Plant plant) {
+        public async Task<PlantDto> UpdatePlant(PlantDto plantDto) {
+            var plant = _mapper.Map<Plant>(plantDto);
             _dbContext.Entry(plant).State = EntityState.Modified;
             try {
                 await _dbContext.SaveChangesAsync();
@@ -48,17 +58,17 @@ namespace LittleGrootServer.Services {
                     throw;
                 }
             }
-            return plant;
+            return _mapper.Map<PlantDto>(plant);
         }
 
-        public async Task<Plant> DeletePlant(long id) {
+        public async Task<PlantDto> DeletePlant(long id) {
             var plant = await _dbContext.Plants.FindAsync(id);
             if (plant != null) {
                 _dbContext.Plants.Remove(plant);
                 await _dbContext.SaveChangesAsync();
             }
 
-            return plant;
+            return _mapper.Map<PlantDto>(plant);
         }
 
         private Task<bool> PlantExists(long id) {

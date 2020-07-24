@@ -29,9 +29,9 @@ namespace LittleGrootServer.Services {
         private readonly AppSettings _appSettings;
 
         public UsersService(LittleGrootDbContext context, IMapper mapper, IOptions<AppSettings> options) {
-            this._dbContext = context;
-            this._mapper = mapper;
-            this._appSettings = options.Value;
+            _dbContext = context;
+            _mapper = mapper;
+            _appSettings = options.Value;
         }
 
         public async Task<IEnumerable<UserDto>> GetUsers() {

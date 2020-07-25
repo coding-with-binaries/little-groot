@@ -1,7 +1,7 @@
 <template>
   <div id="little-groot">
     <GrootHeader />
-    <router-view />
+    <div id="little-groot-body"><router-view /></div>
   </div>
 </template>
 
@@ -26,5 +26,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
+  height: 100vh;
+  width: 100vw;
+
+  #little-groot-body {
+    height: 100%;
+    width: 100%;
+  }
 }
 </style>

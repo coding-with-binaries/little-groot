@@ -1,19 +1,15 @@
 <template>
   <div id="groot-header">
     <div class="groot-categories"></div>
-    <span class="groot-title">little-groot</span>
+    <span class="groot-title">Little Groot</span>
     <div class="groot-user-options"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import GrootInput from '../groot-input-components/groot-input/GrootInput.vue';
-
-@Component({ components: { GrootInput } })
-export default class GrootHeader extends Vue {
-  private value!: string;
-}
+export default {
+  name: 'groot-header'
+};
 </script>
 
 <style scoped lang="scss">

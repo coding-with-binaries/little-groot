@@ -41,12 +41,12 @@ namespace LittleGrootServer.Services {
         }
 
         public async Task<AuthenticationResponseDto> Authenticate(AuthenticationRequestDto authenticationDto) {
-            string userName = authenticationDto.UserName;
+            string email = authenticationDto.Email;
             string password = authenticationDto.Password;
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.UserName == userName);
+            var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Email == email);
 
             if (user == null)
                 return null;
@@ -68,10 +68,9 @@ namespace LittleGrootServer.Services {
 
             AuthenticationResponseDto authenticationResponseDto = new AuthenticationResponseDto {
                 Id = user.Id,
-                UserName = user.UserName,
+                Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Email = user.Email,
                 Token = tokenString
             };
             return authenticationResponseDto;
@@ -83,8 +82,8 @@ namespace LittleGrootServer.Services {
             if (string.IsNullOrWhiteSpace(password))
                 throw new LittleGrootRegistrationException("Password is required");
 
-            if (await _dbContext.Users.AnyAsync(x => x.UserName == user.UserName))
-                throw new LittleGrootRegistrationException("Username '" + user.UserName + "' is already taken");
+            if (await _dbContext.Users.AnyAsync(x => x.Email == user.Email))
+                throw new LittleGrootRegistrationException("Email '" + user.Email + "' is already taken");
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);

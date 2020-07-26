@@ -2,19 +2,17 @@
   <div id="groot-login">
     <span id="groot-title">little groot</span>
     <div id="login-jumbotron">
-      <span class="login-title">
-        Login
-      </span>
+      <span class="login-title">Login</span>
       <el-form
         class="login-form"
         :model="loginForm"
         :rules="rules"
         ref="loginForm"
       >
-        <el-form-item label="Username" prop="userName">
+        <el-form-item label="Email Address" prop="email">
           <el-input
-            v-model="loginForm.userName"
-            placeholder="Enter your username here"
+            v-model="loginForm.email"
+            placeholder="Enter your e-mail address here"
             prefix-icon="el-icon-user"
             autofocus
           ></el-input>
@@ -27,15 +25,14 @@
             show-password
           ></el-input>
         </el-form-item>
-        <el-button
-          id="login-button"
-          type="primary"
-          @click="submitForm('loginForm')"
-        >
+        <el-button id="login-button" type="primary" @click="submitForm()">
           Login
         </el-button>
       </el-form>
     </div>
+    <el-button type="text" @click="routeToRegister()">
+      Register to Little Groot
+    </el-button>
   </div>
 </template>
 
@@ -44,37 +41,45 @@ export default {
   data() {
     return {
       loginForm: {
-        userName: '',
+        email: '',
         password: ''
       },
       rules: {
-        userName: [
+        email: [
           {
             required: true,
-            message: 'Username is a required field',
-            trigger: 'change'
+            message: 'Email address is a required field',
+            trigger: 'blur'
+          },
+          {
+            type: 'email',
+            message: 'Email address is not valid',
+            trigger: 'blur'
           }
         ],
         password: [
           {
             required: true,
             message: 'Password is a required field',
-            trigger: 'change'
+            trigger: 'blur'
           }
         ]
       }
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    submitForm() {
+      this.$refs.loginForm.validate(valid => {
         if (valid) {
-          alert('submit!');
+          console.log(this.$data);
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+    },
+    routeToRegister() {
+      this.$router.push('/register');
     }
   }
 };
@@ -99,8 +104,7 @@ export default {
   }
 
   #login-jumbotron {
-    height: 400px;
-    width: 480px;
+    padding: 4rem;
 
     display: flex;
     flex-direction: column;

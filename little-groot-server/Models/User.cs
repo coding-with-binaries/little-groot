@@ -9,16 +9,12 @@ namespace LittleGrootServer.Models {
         public long Id { get; set; }
 
         [Required]
-        [Display(Name = "User Name")]
-        public string UserName { get; set; }
+        [Display(Name = "Email Address")]
+        public string Email { get; set; }
 
         [Required]
         [Display(Name = "Password")]
         public string Password { get; set; }
-
-        [Required]
-        [Display(Name = "E-mail Address")]
-        public string Email { get; set; }
 
         [Required]
         [StringLength(60, MinimumLength = 3)]

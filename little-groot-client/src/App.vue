@@ -1,18 +1,13 @@
 <template>
   <div id="little-groot">
-    <GrootHeader />
-    <div id="little-groot-body"><router-view /></div>
+    <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import GrootHeader from '@/components/groot-header/GrootHeader.vue';
-
 export default {
   name: 'Home',
-  components: {
-    GrootHeader
-  }
+  components: {}
 };
 </script>
 
@@ -29,10 +24,5 @@ body {
 
   height: 100vh;
   width: 100vw;
-
-  #little-groot-body {
-    height: 100%;
-    width: 100%;
-  }
 }
 </style>

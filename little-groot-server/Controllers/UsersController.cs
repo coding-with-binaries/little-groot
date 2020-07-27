@@ -24,6 +24,16 @@ namespace LittleGrootServer.Controllers {
         }
 
         [AllowAnonymous]
+        [HttpGet("{email}/availability")]
+        public async Task<IActionResult> CheckEmailAvailability(string email) {
+            var emailAvailable = await _usersService.IsEmailAvailable(email);
+
+            return Ok(new {
+                emailAvailable = emailAvailable
+            });
+        }
+
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register([FromBody] RegistrationDto registrationDto) {
             try {

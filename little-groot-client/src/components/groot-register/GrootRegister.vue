@@ -14,13 +14,13 @@
           <el-input
             v-model="registerForm.email"
             placeholder="Enter your e-mail address here"
+            autofocus
           ></el-input>
         </el-form-item>
         <el-form-item label="First name" prop="firstName">
           <el-input
             v-model="registerForm.firstName"
             placeholder="Enter your first name here"
-            autofocus
           ></el-input>
         </el-form-item>
         <el-form-item label="Last name" prop="lastName">
@@ -59,6 +59,14 @@ import axios from 'axios';
 
 export default {
   data() {
+    const validateEmailAvailability = async (rule, value, callback) => {
+      const response = await axios.get(`/api/v1/users/${value}/availability`);
+      if (!response.data.emailAvailable) {
+        callback(new Error('The Email Address is already registered'));
+      } else {
+        callback();
+      }
+    };
     const validateConfirmPassword = (rule, value, callback) => {
       if (value !== this.registerForm.password) {
         callback(new Error('Password do not match!'));
@@ -99,7 +107,8 @@ export default {
             type: 'email',
             message: 'Email address is not valid',
             trigger: 'blur'
-          }
+          },
+          { validator: validateEmailAvailability, trigger: 'blur' }
         ],
         password: [
           {
@@ -139,6 +148,7 @@ export default {
     async registerUser(payload) {
       try {
         await axios.post('/api/v1/users/register', payload);
+        this.$router.push('/login');
       } catch (e) {
         //
       }

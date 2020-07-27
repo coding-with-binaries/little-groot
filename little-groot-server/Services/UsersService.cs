@@ -20,6 +20,7 @@ namespace LittleGrootServer.Services {
         Task<AuthenticationResponseDto> Authenticate(AuthenticationRequestDto authenticationDto);
         Task<UserDto> Register(RegistrationDto registrationDto);
         Task<UserDto> GetUser(long id);
+        Task<bool> IsEmailAvailable(string email);
     }
 
     public class UsersService : IUsersService {
@@ -101,6 +102,12 @@ namespace LittleGrootServer.Services {
             var user = await _dbContext.Users.FindAsync(id);
 
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<bool> IsEmailAvailable(string email) {
+            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+
+            return user == null;
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

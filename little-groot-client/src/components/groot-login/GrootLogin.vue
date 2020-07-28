@@ -28,6 +28,9 @@
         <el-button id="login-button" type="primary" @click="submitForm()">
           Login
         </el-button>
+        <el-checkbox class="remember-me" v-model="loginForm.rememberMe">
+          Remember me
+        </el-checkbox>
       </el-form>
     </div>
     <el-button type="text" @click="routeToRegister()">
@@ -37,12 +40,15 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       loginForm: {
         email: '',
-        password: ''
+        password: '',
+        rememberMe: false
       },
       rules: {
         email: [
@@ -71,12 +77,27 @@ export default {
     submitForm() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          console.log(this.$data);
+          const payload = this.loginForm;
+          this.authenticateUser(payload);
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+    },
+    async authenticateUser(payload) {
+      try {
+        const response = await axios.post(
+          '/api/v1/users/authenticate',
+          payload
+        );
+        if (response.status === 200) {
+          localStorage.setItem('groot-auth-token', response.data.token);
+          this.$router.push('/');
+        }
+      } catch (e) {
+        // Handle Error
+      }
     },
     routeToRegister() {
       this.$router.push('/register');
@@ -125,6 +146,10 @@ export default {
 
     .login-form {
       width: 400px;
+
+      .remember-me {
+        margin-top: 1rem;
+      }
     }
 
     #login-button {

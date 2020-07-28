@@ -7,5 +7,8 @@ namespace LittleGrootServer.Dto {
 
         [Required]
         public string Password { get; set; }
+
+        [Required]
+        public bool RememberMe { get; set; }
     }
 }

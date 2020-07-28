@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace LittleGrootServer.Services {
         Task<UserDto> Register(RegistrationDto registrationDto);
         Task<UserDto> GetUser(long id);
         Task<bool> IsEmailAvailable(string email);
+        Task<UserDto> GetCurrentUser();
     }
 
     public class UsersService : IUsersService {
@@ -44,6 +46,7 @@ namespace LittleGrootServer.Services {
         public async Task<AuthenticationResponseDto> Authenticate(AuthenticationRequestDto authenticationDto) {
             string email = authenticationDto.Email;
             string password = authenticationDto.Password;
+            bool rememberMe = authenticationDto.RememberMe;
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return null;
 
@@ -61,7 +64,7 @@ namespace LittleGrootServer.Services {
                 Subject = new ClaimsIdentity(new Claim[] {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(rememberMe ? 7 : 1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -108,6 +111,11 @@ namespace LittleGrootServer.Services {
             var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
 
             return user == null;
+        }
+
+        public async Task<UserDto> GetCurrentUser() {
+            await _dbContext.Users.FindAsync();
+            return null;
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

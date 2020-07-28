@@ -53,5 +53,10 @@ namespace LittleGrootServer.Controllers {
 
             return Ok(authenticationResponseDto);
         }
+
+        [HttpGet("current-user")]
+        public async Task<ActionResult<UserDto>> GetCurrentUser() {
+            return await _usersService.GetCurrentUser();
+        }
     }
 }

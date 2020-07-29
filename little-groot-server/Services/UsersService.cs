@@ -30,11 +30,14 @@ namespace LittleGrootServer.Services {
         private LittleGrootDbContext _dbContext;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersService(LittleGrootDbContext context, IMapper mapper, IOptions<AppSettings> options) {
+        public UsersService(LittleGrootDbContext context, IMapper mapper, IOptions<AppSettings> options,
+            IHttpContextAccessor httpContextAccessor) {
             _dbContext = context;
             _mapper = mapper;
             _appSettings = options.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IEnumerable<UserDto>> GetUsers() {
@@ -114,8 +117,9 @@ namespace LittleGrootServer.Services {
         }
 
         public async Task<UserDto> GetCurrentUser() {
-            await _dbContext.Users.FindAsync();
-            return null;
+            var currentUserId = _httpContextAccessor.HttpContext.User.Identity.Name;
+
+            return await GetUser(long.Parse(currentUserId));
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

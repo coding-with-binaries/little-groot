@@ -56,7 +56,8 @@ namespace LittleGrootServer.Controllers {
 
         [HttpGet("current-user")]
         public async Task<ActionResult<UserDto>> GetCurrentUser() {
-            return await _usersService.GetCurrentUser();
+            var userDto = await _usersService.GetCurrentUser();
+            return Ok(userDto);
         }
     }
 }

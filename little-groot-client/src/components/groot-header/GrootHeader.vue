@@ -6,9 +6,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import { store } from '@/store';
 export default {
-  name: 'groot-header'
+  created: function() {
+    console.log(store);
+  }
 };
 </script>
 

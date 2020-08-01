@@ -30,7 +30,8 @@ namespace LittleGrootServer {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddRouting(opt => opt.LowercaseUrls = true);
-            services.AddDbContext<LittleGrootDbContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("LittleGrootDbConnection")));
+            services.AddDbContext<LittleGrootDbContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("LittleGrootDbConnection")),
+                ServiceLifetime.Transient);
             services.AddSwaggerGen(opt => {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Little Groot API", Version = "v1" });
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {

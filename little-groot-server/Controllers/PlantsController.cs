@@ -19,15 +19,15 @@ namespace LittleGrootServer.Controllers {
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlantDto>>> GetPlants() {
-            var plants = await _plantsService.GetPlants();
+        public ActionResult<IEnumerable<PlantDto>> GetPlants() {
+            var plants = _plantsService.GetPlants();
             return Ok(plants);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PlantDto>> GetPlant(long id) {
-            var plant = await _plantsService.GetPlant(id);
+        public ActionResult<PlantDto> GetPlant(long id) {
+            var plant = _plantsService.GetPlant(id);
 
             if (plant == null) {
                 return NotFound();
@@ -37,15 +37,15 @@ namespace LittleGrootServer.Controllers {
         }
 
         [HttpPost]
-        public async Task<ActionResult<PlantDto>> AddPlant(PlantDto plantDto) {
-            plantDto = await _plantsService.AddPlant(plantDto);
+        public ActionResult<PlantDto> AddPlant(PlantDto plantDto) {
+            plantDto = _plantsService.AddPlant(plantDto);
             return CreatedAtAction("GetPlant", new { id = plantDto.Id }, plantDto);
         }
 
         [HttpPut]
-        public async Task<ActionResult<PlantDto>> UpdatePlant(PlantDto plantDto) {
+        public ActionResult<PlantDto> UpdatePlant(PlantDto plantDto) {
             try {
-                plantDto = await _plantsService.UpdatePlant(plantDto);
+                plantDto = _plantsService.UpdatePlant(plantDto);
                 if (plantDto == null) {
                     return NotFound();
                 }
@@ -56,8 +56,8 @@ namespace LittleGrootServer.Controllers {
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PlantDto>> DeletePlant(long id) {
-            var plant = await _plantsService.DeletePlant(id);
+        public ActionResult<PlantDto> DeletePlant(long id) {
+            var plant = _plantsService.DeletePlant(id);
             if (plant == null) {
                 return NotFound();
             }

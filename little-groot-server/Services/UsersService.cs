@@ -2,13 +2,12 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
 using LittleGrootServer.Data;
 using LittleGrootServer.Exceptions;
 using LittleGrootServer.Dto;
@@ -17,12 +16,12 @@ using LittleGrootServer.Utils;
 
 namespace LittleGrootServer.Services {
     public interface IUsersService {
-        Task<IEnumerable<UserDto>> GetUsers();
-        Task<AuthenticationResponseDto> Authenticate(AuthenticationRequestDto authenticationDto);
-        Task<UserDto> Register(RegistrationDto registrationDto);
-        Task<UserDto> GetUser(long id);
-        Task<bool> IsEmailAvailable(string email);
-        Task<UserDto> GetCurrentUser();
+        IEnumerable<UserDto> GetUsers();
+        AuthenticationResponseDto Authenticate(AuthenticationRequestDto authenticationDto);
+        UserDto Register(RegistrationDto registrationDto);
+        UserDto GetUser(long id);
+        bool IsEmailAvailable(string email);
+        UserDto GetCurrentUser();
     }
 
     public class UsersService : IUsersService {
@@ -40,20 +39,20 @@ namespace LittleGrootServer.Services {
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IEnumerable<UserDto>> GetUsers() {
-            var users = await _dbContext.Users.ToListAsync();
+        public IEnumerable<UserDto> GetUsers() {
+            var users = _dbContext.Users.ToList();
 
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<AuthenticationResponseDto> Authenticate(AuthenticationRequestDto authenticationDto) {
+        public AuthenticationResponseDto Authenticate(AuthenticationRequestDto authenticationDto) {
             string email = authenticationDto.Email;
             string password = authenticationDto.Password;
             bool rememberMe = authenticationDto.RememberMe;
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Email == email);
+            var user = _dbContext.Users.SingleOrDefault(x => x.Email == email);
 
             if (user == null)
                 return null;
@@ -83,13 +82,13 @@ namespace LittleGrootServer.Services {
             return authenticationResponseDto;
         }
 
-        public async Task<UserDto> Register(RegistrationDto registrationDto) {
+        public UserDto Register(RegistrationDto registrationDto) {
             var password = registrationDto.Password;
             var user = _mapper.Map<User>(registrationDto);
             if (string.IsNullOrWhiteSpace(password))
                 throw new LittleGrootRegistrationException("Password is required");
 
-            if (await _dbContext.Users.AnyAsync(x => x.Email == user.Email))
+            if (_dbContext.Users.Any(x => x.Email == user.Email))
                 throw new LittleGrootRegistrationException("Email '" + user.Email + "' is already taken");
 
             byte[] passwordHash, passwordSalt;
@@ -98,28 +97,28 @@ namespace LittleGrootServer.Services {
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            await _dbContext.Users.AddAsync(user);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
 
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<UserDto> GetUser(long id) {
-            var user = await _dbContext.Users.FindAsync(id);
+        public UserDto GetUser(long id) {
+            var user = _dbContext.Users.Find(id);
 
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<bool> IsEmailAvailable(string email) {
-            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        public bool IsEmailAvailable(string email) {
+            var user = _dbContext.Users.SingleOrDefault(u => u.Email == email);
 
             return user == null;
         }
 
-        public async Task<UserDto> GetCurrentUser() {
+        public UserDto GetCurrentUser() {
             var currentUserId = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            return await GetUser(long.Parse(currentUserId));
+            return GetUser(long.Parse(currentUserId));
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

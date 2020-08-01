@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import { store } from '@/store';
+// import { store } from '@/store';
 export default {
   created: function() {
-    console.log(store);
+    //
   }
 };
 </script>

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import UserApi from '../../api/User';
 
 export default {
   data() {
@@ -87,10 +87,7 @@ export default {
     },
     async authenticateUser(payload) {
       try {
-        const response = await axios.post(
-          '/api/v1/users/authenticate',
-          payload
-        );
+        const response = await UserApi.authenticate(payload);
         if (response.status === 200) {
           localStorage.setItem('groot-auth-token', response.data.token);
           this.$router.push('/');

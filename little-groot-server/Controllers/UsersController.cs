@@ -18,15 +18,15 @@ namespace LittleGrootServer.Controllers {
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers() {
-            var userDtos = await _usersService.GetUsers();
+        public ActionResult<IEnumerable<UserDto>> GetUsers() {
+            var userDtos = _usersService.GetUsers();
             return Ok(userDtos);
         }
 
         [AllowAnonymous]
         [HttpGet("{email}/availability")]
-        public async Task<IActionResult> CheckEmailAvailability(string email) {
-            var emailAvailable = await _usersService.IsEmailAvailable(email);
+        public IActionResult CheckEmailAvailability(string email) {
+            var emailAvailable = _usersService.IsEmailAvailable(email);
 
             return Ok(new {
                 emailAvailable = emailAvailable
@@ -35,9 +35,9 @@ namespace LittleGrootServer.Controllers {
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register([FromBody] RegistrationDto registrationDto) {
+        public ActionResult<UserDto> Register([FromBody] RegistrationDto registrationDto) {
             try {
-                var userDto = await _usersService.Register(registrationDto);
+                var userDto = _usersService.Register(registrationDto);
                 return Ok(userDto);
             } catch (LittleGrootRegistrationException ex) {
                 return BadRequest(new { message = ex.Message });
@@ -46,8 +46,8 @@ namespace LittleGrootServer.Controllers {
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<ActionResult<AuthenticationResponseDto>> Authenticate([FromBody] AuthenticationRequestDto authenticationRequestDto) {
-            var authenticationResponseDto = await _usersService.Authenticate(authenticationRequestDto);
+        public ActionResult<AuthenticationResponseDto> Authenticate([FromBody] AuthenticationRequestDto authenticationRequestDto) {
+            var authenticationResponseDto = _usersService.Authenticate(authenticationRequestDto);
             if (authenticationResponseDto == null)
                 return BadRequest("Username and password are incorrect");
 
@@ -55,8 +55,8 @@ namespace LittleGrootServer.Controllers {
         }
 
         [HttpGet("current-user")]
-        public async Task<ActionResult<UserDto>> GetCurrentUser() {
-            var userDto = await _usersService.GetCurrentUser();
+        public ActionResult<UserDto> GetCurrentUser() {
+            var userDto = _usersService.GetCurrentUser();
             return Ok(userDto);
         }
     }

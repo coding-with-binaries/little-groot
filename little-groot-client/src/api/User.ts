@@ -5,7 +5,10 @@ import {
 } from '@/types/User';
 import axios from 'axios';
 import { LittleGrootApiUri } from './Uri';
-import { getAuthorizationHeader } from '@/utils/axios-utils';
+import {
+  getAuthorizationHeader,
+  clearAuthorizationToken
+} from '@/utils/axios-utils';
 
 axios.defaults.headers.common['Authorization'] = getAuthorizationHeader();
 
@@ -19,10 +22,16 @@ export default class UserApi {
   }
 
   public static async getCurrentUser() {
-    const res = await axios.get<User>(
-      LittleGrootApiUri.User.GET_CURRENT_USER_URI
-    );
-    console.log(res);
-    return res.data;
+    try {
+      const res = await axios.get<User>(
+        LittleGrootApiUri.User.GET_CURRENT_USER_URI
+      );
+      return res.data;
+    } catch (e) {
+      const res: Response = e.response;
+      if (res.status === 401) {
+        clearAuthorizationToken();
+      }
+    }
   }
 }

@@ -1,7 +1,15 @@
 <template>
   <div id="groot-login">
-    <span id="groot-title">little groot</span>
+    <router-link to="/" id="groot-title">little groot</router-link>
     <div id="login-jumbotron">
+      <el-alert
+        class="registered-alert"
+        v-if="$route.query.registered"
+        title="User registered successfully!"
+        type="success"
+        @close="dismissRegisteredAlert"
+        show-icon
+      ></el-alert>
       <span class="login-title">Login</span>
       <el-form
         class="login-form"
@@ -80,24 +88,23 @@ export default {
           const payload = this.loginForm;
           this.authenticateUser(payload);
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
     },
     async authenticateUser(payload) {
       try {
-        const response = await UserApi.authenticate(payload);
-        if (response.status === 200) {
-          localStorage.setItem('groot-auth-token', response.data.token);
-          this.$router.push('/');
-        }
+        await UserApi.authenticate(payload);
+        this.$router.push('/');
       } catch (e) {
         // Handle Error
       }
     },
     routeToRegister() {
       this.$router.push('/register');
+    },
+    dismissRegisteredAlert() {
+      this.$router.push('/login');
     }
   }
 };
@@ -114,6 +121,7 @@ export default {
   justify-content: center;
 
   #groot-title {
+    text-decoration: unset;
     margin-bottom: 2rem;
 
     font-size: 32px;
@@ -131,6 +139,10 @@ export default {
 
     border: 2px solid #e8e8e8;
     border-radius: 4px;
+
+    .registered-alert {
+      margin-bottom: 1rem;
+    }
 
     .login-title {
       width: 400px;

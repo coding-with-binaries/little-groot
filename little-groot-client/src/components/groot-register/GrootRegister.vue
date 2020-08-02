@@ -1,6 +1,6 @@
 <template>
   <div id="groot-register">
-    <span id="groot-title">little groot</span>
+    <router-link to="/" id="groot-title">little groot</router-link>
     <div id="register-jumbotron">
       <span class="register-title">Create an account</span>
       <el-form
@@ -148,7 +148,7 @@ export default {
     async registerUser(payload) {
       try {
         await axios.post('/api/v1/users/register', payload);
-        this.$router.push('/login');
+        this.$router.push({ path: '/login', query: { registered: true } });
       } catch (e) {
         //
       }
@@ -171,6 +171,7 @@ export default {
   justify-content: center;
 
   #groot-title {
+    text-decoration: unset;
     margin-bottom: 2rem;
 
     font-size: 32px;

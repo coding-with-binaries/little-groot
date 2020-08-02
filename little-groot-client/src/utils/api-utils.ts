@@ -6,6 +6,10 @@ export function getAuthorizationHeader() {
   return null;
 }
 
+export function setAuthorizationToken(token: string) {
+  localStorage.setItem('groot-auth-token', token);
+}
+
 export function clearAuthorizationToken() {
   localStorage.removeItem('groot-auth-token');
 }

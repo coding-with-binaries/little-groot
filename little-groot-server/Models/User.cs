@@ -27,5 +27,7 @@ namespace LittleGrootServer.Models {
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+
+        public Cart Cart { get; set; }
     }
 }

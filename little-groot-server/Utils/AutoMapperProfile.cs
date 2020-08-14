@@ -9,6 +9,8 @@ namespace LittleGrootServer.Utils {
             CreateMap<RegistrationDto, User>();
             CreateMap<Plant, PlantDto>();
             CreateMap<PlantDto, Plant>();
+            CreateMap<Cart, CartDto>();
+            CreateMap<CartItem, CartItemDto>();
         }
     }
 }

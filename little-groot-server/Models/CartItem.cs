@@ -8,6 +8,7 @@ namespace LittleGrootServer.Models {
         [Display(Name = "Cart Item Id")]
         public long Id { get; set; }
 
+        public long PlantId { get; set; }
         public Plant Plant { get; set; }
         public int Quantity { get; set; }
 

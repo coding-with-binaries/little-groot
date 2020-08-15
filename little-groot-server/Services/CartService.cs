@@ -28,9 +28,17 @@ namespace LittleGrootServer.Services {
 
         public CartDto GetUserCart() {
             var currentUserId = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var cart = _dbContext.Cart.FirstOrDefault(c => c.UserId == long.Parse(currentUserId));
+            var cart = _dbContext.Carts.FirstOrDefault(c => c.UserId == long.Parse(currentUserId));
+            if (cart != null) {
+                var cartItems = _dbContext.CartItems.Where(item => item.CartId == cart.Id).ToList();
+                cartItems.ForEach(item => {
+                    item.Plant = _dbContext.Plants.Find(item.PlantId);
+                });
+                cart.CartItems = cartItems;
 
-            return _mapper.Map<CartDto>(cart);
+                return _mapper.Map<CartDto>(cart);
+            }
+            return null;
         }
     }
 }

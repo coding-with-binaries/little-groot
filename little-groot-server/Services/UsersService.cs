@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using LittleGrootServer.Data;
@@ -27,13 +28,15 @@ namespace LittleGrootServer.Services {
     public class UsersService : IUsersService {
 
         private LittleGrootDbContext _dbContext;
+        private readonly ILogger _logger;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersService(LittleGrootDbContext context, IMapper mapper, IOptions<AppSettings> options,
-            IHttpContextAccessor httpContextAccessor) {
+        public UsersService(LittleGrootDbContext context, ILogger<UsersService> logger, IMapper mapper,
+            IOptions<AppSettings> options, IHttpContextAccessor httpContextAccessor) {
             _dbContext = context;
+            _logger = logger;
             _mapper = mapper;
             _appSettings = options.Value;
             _httpContextAccessor = httpContextAccessor;
@@ -98,6 +101,8 @@ namespace LittleGrootServer.Services {
             user.PasswordSalt = passwordSalt;
 
             _dbContext.Users.Add(user);
+            _dbContext.Carts.Add(new Cart { User = user });
+
             _dbContext.SaveChanges();
 
             return _mapper.Map<UserDto>(user);

@@ -14,9 +14,12 @@ namespace LittleGrootServer.Controllers {
             _cartService = cartService;
         }
 
-        [HttpGet]
+        [HttpGet("items")]
         public ActionResult<CartDto> GetUserCart() {
             var cartDto = _cartService.GetUserCart();
+            if (cartDto == null) {
+                return NotFound();
+            }
             return Ok(cartDto);
         }
     }
